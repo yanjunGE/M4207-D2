@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block body %}
+<style>
+    <link herf="https://bootswatch.com/5/journal/bootstrap.min.css" rel="stylesheet" >
+</style>
+
+
+<body>
+
+         <div class="container">
+
+         <h1> Formulaire d'ajout d'un Utilisateur  </h1>
+
+         <form >
+
+           <div class="form-group">
+
+             <label for="civilite" class="form-label">Civilite</label>
+
+             <select name="civilite" id="role" class="form-control">
+
+                 <option value="1">Madame</option>
+
+                 <option value="2">Monsieur</option>
+
+             </select>
+
+           </div>
+
+           <div class="form-group">
+
+          <label for="nom" class="form-label">Nom</label>
+
+             <input type="text" class="form-control" id="nom" aria-describedby="emailHelp" name="nom">
+
+           </div>
+
+           <div class="form-group">
+
+             <label for="penom" class="form-label">Prenom</label>
+
+             <input type="text" class="form-control" id="prenom" aria-describedby="emailHelp" name="prenom">
+
+           </div>
+
+           <div class="form-group">
+
+             <label for="email" class="form-label">Email</label>
+
+             <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+
+           </div>
+
+           <div class="form-group">
+
+             <label for="exampleInputPassword1" class="form-label">Password</label>
+
+             <input type="password" class="form-control" id="password1" name="password">
+
+           </div>
+
+           <div class="form-group">
+
+             <label for="exampleInputPassword1" class="form-label" >Confirmation de password</label>
+
+             <input type="password" class="form-control" id="password2" onBlur="return verifyPassword();">
+
+             <div id="reponse"> </div>
+
+           </div>
+
+           
+    
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+    </div>
+
+    <script>
+
+         function verifyPassword(){
+
+           var pw1 = document.getElementById("password1").value;
+
+           var pw2 = document.getElementById("password2").value;  
+
+           console.log(pw1,pw2);
+
+           if(pw1 == pw2 ) { 
+
+              document.getElementById("reponse").innerHTML = "Les mot de passe correspondent"; 
+
+              return true; 
+
+           }else{
+
+             document.getElementById("reponse").innerHTML = "Les mot de passe ne correspondent pas";
+
+           }
+
+           }
+
+    </script>
+
+    <!-- insertion js --- debut -->
+
+    <?php
+
+    include 'template/base-footer.php';
+
+    ?>
+
+    <!-- insertion js --- fin -->
+
+   
+
+    </body>
+
+</html>
+{% endblock %}
