@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
+
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Utilisateur;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ServeurController extends AbstractController
 {
@@ -26,18 +29,33 @@ class ServeurController extends AbstractController
     /**
      * @Route("/valide", name="valide")
      */
-    public function valide(Request $request): Response
+    public function valide(Request $request,EntityManagerInterface $manager): Response
     {
-        $login=$request->request->get("root");
-        $password=$request->request->get("valide");
+        $login=$request->request->get("login");
+       $password=$request->request->get("password");
+       
 
-        
-            return $this->rendre('serveur/valide.html.twig', [
-                'controller_name' => 'ServeurController',
-                'login'=> $login,
-                'password'=> $password,
-            ]);
-        
+        $reponse = $manager -> getRepository(Utilisateur::class) -> findOneBy([ 'login' => $login]);
+            if($reponse==NULL){
+                $valide="utilisateur n'exsit pas";
+               
+
+            }else{
+                $motdepass=$reponse -> getPassword();
+                if($motdepass==$password){
+                    $valide="valide";
+                   
+                }else{
+                    $valide="password n'est pas correct";
+                }
+            
+            }
+            return $this->render('serveur/valide.html.twig', [
+                    'controller_name' => 'ServeurController',
+                    'login'=> $login,
+                    'password'=> $password, 
+                    'valide'=> $valide
+                    ]);
 
     }
     /**
@@ -45,6 +63,7 @@ class ServeurController extends AbstractController
      */
     public function signup(): Response
     {
+        
         return $this->render('serveur/creerutilisateur.html.twig', [
             'controller_name' => 'ServeurController',
         ]);
