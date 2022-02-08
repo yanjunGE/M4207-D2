@@ -62,9 +62,33 @@ class ServeurController extends AbstractController
      * @Route("/signup", name="creerutilisateur")
      */
     public function signup(): Response
+    { 
+        return $this->render('serveur/creerutilisateur.html.twig', [
+            'controller_name' => 'ServeurController',
+        ]);
+    } 
+     /**
+     * @Route("/newutilisateur", name="newutilisateur")
+     */
+    public function newutilisateur(Request $request,EntityManagerInterface $manager): Response
+    {
+        $newlogin=$request->request->get("newlogin");
+        $newpassword=$request->request->get("newpassword1");
+        $newutilisateur= new Utilisateur();
+        $newutilisateur->setlogin($newlogin);
+        $newutilisateur->setpassword($newpassword);
+        $manager -> persist($newutilisateur);
+        $manager ->flush();
+        return $this->redirectToRoute ('affiche');
+          
+    }
+     /**
+     * @Route("/affiche", name="affiche")
+     */
+    public function affiche(): Response
     {
         
-        return $this->render('serveur/creerutilisateur.html.twig', [
+        return $this->render('serveur/affiche.html.twig', [
             'controller_name' => 'ServeurController',
         ]);
 
