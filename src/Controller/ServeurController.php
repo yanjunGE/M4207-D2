@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ServeurController extends AbstractController
 {
@@ -70,7 +71,7 @@ class ServeurController extends AbstractController
      /**
      * @Route("/newutilisateur", name="newutilisateur")
      */
-    public function newutilisateur(Request $request,EntityManagerInterface $manager): Response
+    public function newutilisateur(Request $request,EntityManagerInterface $manager,SessionInterface $session): Response
     {
         $newlogin=$request->request->get("newlogin");
         $newpassword=$request->request->get("newpassword1");
@@ -85,15 +86,30 @@ class ServeurController extends AbstractController
      /**
      * @Route("/affiche", name="affiche")
      */
-    public function affiche(): Response
+    public function affiche(Request $request,EntityManagerInterface $manager): Response
     {
         
-        return $this->render('serveur/affiche.html.twig', [
-            'controller_name' => 'ServeurController',
-        ]);
+        $mesUtilisateurs = $manager->getRepository(Utilisateur::class)->findAll();
+        return $this->render('serveur/affiche.html.twig',['lst_utilisateurs' => $mesUtilisateurs]);
+            
+        
 
         
     } 
+     /**
+     * @Route("/session", name="session")
+     */
+    public function session(Request $request,EntityManagerInterface $manager,SessionInterface $session): Response
+    {
+        $vs = $session -> get('login');
+        $val=44;
+        $session -> set('nomVar',$val);
+        $utilisateur->getId();
+        $utilisateur = $manager -> getRepository(Utilisateur::class)->findOneById($userId);
+        $utilisateur->getId();
+        return $this->redirectToRoute ('affiche');
+          
+    }
 
       
     
