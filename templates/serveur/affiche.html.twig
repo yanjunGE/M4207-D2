@@ -1,10 +1,15 @@
 {% extends 'base.html.twig' %}
 
+
 {% block title %}Affiche{% endblock %}
 
 {% block body %}
 
-
+      <!-- insertion du menu - debut -->
+			<?php
+				include 'menu.html.twig';
+			?>
+			<!-- insertion du menu - fin -->
 <div class="list-group">
   
 
@@ -23,7 +28,7 @@
       <th scope="row"></th>
       <td>{{ un_utilisateur.login  }}</td>
       <td>{{ un_utilisateur.password  }}</td>
-      
+      <td><a href="/supprimerUtilisateur/{{ un_utilisateur.id }}" target="_blank"> <input type="button" class="btn btn-danger" value="Supprimer"> </a></td>
     </tr>
    {% endfor %}
     
