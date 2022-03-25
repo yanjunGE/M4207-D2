@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}insert document{% endblock %}
+
+{% block body %}
+ <h1>upload d'un document</h1>
+
+<form action="/uploadDocument" method="POST">
+  <fieldset>
+    <legend>Formulaire d'upload de Document</legend>
+    <div class="form-group">
+      <label for="exampleInputEmail1" class="form-label mt-4">Nom</label>
+      <input type="text" name="nom" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Nom du document">
+    </div>
+    
+	<fieldset>
+      <legend class="mt-4">Switches</legend>
+      <div class="form-check form-switch">
+        <input class="form-check-input" name="choixBox" type="checkbox" id="flexSwitchCheckChecked" checked="">
+        <label class="form-check-label" for="flexSwitchCheckChecked">Checked switch checkbox input</label>
+      </div>
+    </fieldset>
+	<div class="form-group">
+      <label for="exampleInputPassword1" class="form-label mt-4">Utilisateurs</label>
+      <select name="user"class="form-control">
+	  {% for item in Utilisateur %}
+		<option value={{item.id}}> {{ item.login }}</option>
+		{% endfor %}
+	  </select>
+    </div>
+	<button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+{% endblock %}

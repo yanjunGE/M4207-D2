@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Affiche{% endblock %}
+
+{% block body %}
+
+     
+<div class="list-group">
+  
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">liste de documents</th>
+      <th scope="col">login</th>
+      <th scope="col">password</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+  {% for un_document in lst_documents %}
+    <tr class="table-active">
+      <th scope="row"></th>
+      <td>{{ un_document.id  }}</td>
+      <td>{{ un_document.chemin  }}</td>
+     
+      <td>{{ un_document.actif  }}</td>
+      <td><a href="/supprimerDocument/{{ un_document.id }}" target="_blank"> <input type="button" class="btn btn-danger" value="Supprimer"> </a></td>
+    </tr>
+   {% endfor %}
+    
+  </tbody>
+</table>
+
+
+</div>
+
+
+
+{% endblock %}

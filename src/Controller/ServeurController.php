@@ -9,9 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Utilisateur;
+use App\Entity\Document;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Doctrine\Persistence\ManagerRegistry;
 
 class ServeurController extends AbstractController
 {
@@ -172,6 +174,7 @@ class ServeurController extends AbstractController
         //$val = 44;
         //$session -> set('situation',$val);
 
+    
         
           
     }
@@ -190,7 +193,82 @@ class ServeurController extends AbstractController
         
           
     }
-    
+      /**
+     * @Route("/listedocuments", name="listedocuments")
+     */
+    public function listedocuments(Request $request,EntityManagerInterface $manager,SessionInterface $session): Response
+    {
+        if($session->get('userId')==NULL){
+			
+			return $this->redirectToRoute('login');
+		}else{	
+        $mesDocuments = $manager->getRepository(Document::class)->findAll();
+        return $this->render('serveur/listededocuments.html.twig',['lst_documents' => $mesDocuments]);
+            
+        }
+
+        
+    } 
+      /**
+     * @Route("/insertdocuments", name="insertdocuments")
+     */
+    public function insertdocuments(Request $request,EntityManagerInterface $manager,SessionInterface $session,ManagerRegistry $doctrine): Response
+    {
+        if($session->get('userId')==NULL){
+			
+			return $this->redirectToRoute('login');
+		}else{	
+            return $this->render('serveur/insertdocument.html.twig', [
+				'Document' => $doctrine->getRepository(Document::class)->findAll(),
+				'Utilisateur' => $doctrine->getRepository(Utilisateur::class)->findAll(),
+			]); 
+        }
+
+        
+    } 
+     /**
+     * @Route("/uploadDocument", name="uploadDocument")
+     */
+    public function uploadDocument(ManagerRegistry $doctrine, Request $request, EntityManagerInterface $em): Response
+    {
+		
+		if($session->get('userId')==NULL){
+			
+			return $this->redirectToRoute('login');
+			
+		}else{	
+			
+			$doc = new Document();
+			$doc->setLogin($request->request->get('login'));
+			$doc->setChemin("toto");
+			if($request->request->get('choixBox')=="on"){
+				$doc->setActif(1);
+			}else{
+				$doc->setActif(0);
+			}
+			$doc->setCreatedAt(new \DatetimeImmutable);
+			$doc->setType($doctrine->getRepository(Genre::class)->findOneById($request->request->get('genre')));
+			$em->persist($doc);
+			$em->flush();
+			//maj de la table acces
+			$acces = new Acces();
+			$acces->setDocument($doc);
+			$acces->setAutorisation($doctrine->getRepository(Autorisation::class)->findOneById(2));
+			$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($session->get('idUser')));
+			$em->persist($acces);
+			$em->flush();
+			if($request->request->get('user')!="null"){
+				$acces = new Acces();
+				$acces->setDocument($doc);
+				$acces->setAutorisation($doctrine->getRepository(Autorisation::class)->findOneById(2));
+				$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($request->request->get('user')));
+				$em->persist($acces);
+				$em->flush();
+			}
+			//5) sinon on renvoie la page demandée.
+			return $this->redirectToRoute('listedocuments');
+		}
+    }
     
 
       
