@@ -10,6 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Utilisateur;
 use App\Entity\Document;
+use App\Entity\Acces;
+use App\Entity\Autorisation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -229,7 +231,7 @@ class ServeurController extends AbstractController
      /**
      * @Route("/uploadDocument", name="uploadDocument")
      */
-    public function uploadDocument(ManagerRegistry $doctrine, Request $request, EntityManagerInterface $em): Response
+    public function uploadDocument(ManagerRegistry $doctrine, Request $request, SessionInterface $session, EntityManagerInterface $manager): Response
     {
 		
 		if($session->get('userId')==NULL){
@@ -237,35 +239,29 @@ class ServeurController extends AbstractController
 			return $this->redirectToRoute('login');
 			
 		}else{	
-			
-			$doc = new Document();
-			$doc->setLogin($request->request->get('login'));
-			$doc->setChemin("toto");
-			if($request->request->get('choixBox')=="on"){
-				$doc->setActif(1);
+            if($request->request->get('choix') == "on"){
+				$actif=1;
 			}else{
-				$doc->setActif(0);
+				$actif=2;
 			}
-			$doc->setCreatedAt(new \DatetimeImmutable);
-			$doc->setType($doctrine->getRepository(Genre::class)->findOneById($request->request->get('genre')));
-			$em->persist($doc);
-			$em->flush();
-			//maj de la table acces
+			$nom=$request->request->get("nom");
+			$doc = new Document();
+			
+			$doc->setChemin("/documents/$nom");
+			$doc->setActif(1);
+			$doc->setDate(new \DatetimeImmutable);
+			
+			$manager->persist($doc);
+			$manager->flush();
+			// acces
 			$acces = new Acces();
-			$acces->setDocument($doc);
-			$acces->setAutorisation($doctrine->getRepository(Autorisation::class)->findOneById(2));
-			$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($session->get('idUser')));
-			$em->persist($acces);
-			$em->flush();
-			if($request->request->get('user')!="null"){
-				$acces = new Acces();
-				$acces->setDocument($doc);
-				$acces->setAutorisation($doctrine->getRepository(Autorisation::class)->findOneById(2));
-				$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($request->request->get('user')));
-				$em->persist($acces);
-				$em->flush();
-			}
-			//5) sinon on renvoie la page demandée.
+			$acces->setDoc($doc);
+			$acces->setAutor($doctrine->getRepository(Autorisation::class)->findOneById($actif));
+			$acces->setUtil($doctrine->getRepository(Utilisateur::class)->findOneById($session->get('userId')));
+			$manager->persist($acces);
+			$manager->flush();
+			
+			
 			return $this->redirectToRoute('listedocuments');
 		}
     }
